@@ -1,4 +1,4 @@
-from exceptions import *
+from .exceptions import *
 import random
 # Complete with your own, just for fun :)
 LIST_OF_WORDS = ['LOL', 'HELLO', 'FOOL']
@@ -32,15 +32,18 @@ def _uncover_word(answer_word, masked_word, character):
 
 
 def guess_letter(game, letter):
+    if letter in game['previous_guesses']:
+        raise InvalidGuessedLetterException
     letter = letter.lower()
+    previous_masked = game['masked_word']
     if game['answer_word'].lower() == game['masked_word'].lower() or game['remaining_misses'] == 0:
         raise GameFinishedException
     #letter not in answer, masked_word remains unchanged
-    if game['masked_word'] == _uncover_word(game['answer_word'], game['masked_word'], letter):
+    if previous_masked == _uncover_word(game['answer_word'], game['masked_word'], letter):
         game['previous_guesses'].append(letter) #adding to guesses
         game['remaining_misses'] -= 1 #remaining misses go down by one
     #letter in answer, masked_word is updated
-    elif game['masked_word'] != _uncover_word(game['answer_word'], game['masked_word'], letter):
+    elif previous_masked != _uncover_word(game['answer_word'], game['masked_word'], letter):
         game['previous_guesses'].append(letter) #adding to guesses
         game['masked_word'] = _uncover_word(game['answer_word'], game['masked_word'], letter) #updating masked word
     if game['answer_word'].lower() == game['masked_word'].lower():
